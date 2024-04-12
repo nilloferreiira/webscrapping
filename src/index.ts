@@ -28,32 +28,23 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
 
     // select inputs
     // UF
-    await (await page).select('select#uf', 'df');    
+    await (await page).select("select#uf", "df");
     // county
-    await (await page).select('select#municipio', '8770');
-    // subscription   
-    (await page).select('select#inscricao', 'P');
+    await (await page).select("select#municipio", "8770");
+    // subscription
+    (await page).select("select#inscricao", "P");
     // situation type
-    (await page).select('select#tipoSituacao', 'A');
+    (await page).select("select#tipoSituacao", "A");
     // situation
-    (await page).select('select#situacao', 'A');
+    (await page).select("select#situacao", "A");
     // specialty
-    await (await page).select('select#especialidade', '95');
-
-
+    await (await page).select("select#especialidade", "95");
   } catch (e) {
     console.log(e);
   }
 }
 
-async function main() {
-  const doctarData: DoctorData = {
-    name: "Danillo Ferreira Araujo",
-    crm: 1234567,
-    uf: "SE",
-    county: "Aracaju",
-  };
-
+async function main(doctarData: DoctorData) {
   try {
     const browser = await puppeteer.launch({ headless: false });
     const page = browser.newPage();
@@ -75,8 +66,15 @@ async function main() {
   }
 }
 
-let robot = async () => {
-  await main();
+const robot = async () => {
+  const doctarData: DoctorData = {
+    name: "Danillo Ferreira Araujo",
+    crm: 1234567,
+    uf: "SE",
+    county: "Aracaju",
+  };
+
+  await main(doctarData);
 };
 
 robot();
