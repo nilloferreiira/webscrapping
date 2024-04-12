@@ -27,15 +27,17 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
     }
 
     // select inputs
-    // await (await page).select('select#uf', 'df')    
-    
-    // inscrição   
+    // UF
+    await (await page).select('select#uf', 'df');    
+    // county
+    await (await page).select('select#municipio', '8770');
+    // subscription   
     (await page).select('select#inscricao', 'P');
-    // Tipo de situação 
+    // situation type
     (await page).select('select#tipoSituacao', 'A');
-    // situação
+    // situation
     (await page).select('select#situacao', 'A');
-    //especialidade
+    // specialty
     await (await page).select('select#especialidade', '95');
 
 
