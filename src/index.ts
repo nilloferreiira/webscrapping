@@ -28,9 +28,9 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
 
     // select inputs
     // UF
-    await (await page).select("select#uf", "df");
+    await (await page).select("select#uf", "df"); // nao funciona
     // county
-    await (await page).select("select#municipio", "8770");
+    await (await page).select("select#municipio", "8770"); // nn funciona pq o de cima ainda nn funciona
     // subscription
     (await page).select("select#inscricao", "P");
     // situation type
@@ -38,7 +38,25 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
     // situation
     (await page).select("select#situacao", "A");
     // specialty
-    await (await page).select("select#especialidade", "95");
+    await (await page).select("[id='especialidade']", "95"); // nao funciona
+
+    // btn submit
+    const btnSubmit = await (await page).waitForSelector('button.btn-buscar');
+       await btnSubmit?.click()
+    
+    
+    // get Results
+    const resultadoItems = await (await page).waitForSelector('div.resultado-item');
+    console.log(resultadoItems)
+ 
+    
+    // exemple to get the textcontent 
+    // const textSelector = await page.waitForSelector(
+    //     'text/Customize and automate'
+    //   );
+    //   const fullTitle = await textSelector?.evaluate(el => el.textContent);
+  
+
   } catch (e) {
     console.log(e);
   }
