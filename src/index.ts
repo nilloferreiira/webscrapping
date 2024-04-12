@@ -18,7 +18,6 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
     } else {
       console.error('Input element with name="nome" not found.');
     }
-
     const crmInput = await (await page).waitForSelector('input[name="crm"]');
     if (crmInput) {
       await crmInput.focus();
@@ -28,14 +27,16 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
     }
 
     // select inputs
-    // const ufInput = await (await page).waitForSelector('select[name="uf"]');
-    // if (ufInput) {
-    //   const options = await ufInput.evaluate((el) => {
-    //     return Array.from(el.options).map((option: any) => option.value);
-    //   });
-    //   console.log(options);
-    //   await ufInput.select(doctorData.uf);
-    // }
+    // await (await page).select('select#uf', 'df')    
+    
+    // inscrição   
+    (await page).select('select#inscricao', 'P');
+    // Tipo de situação 
+    (await page).select('select#tipoSituacao', 'A');
+    // situação
+    (await page).select('select#situacao', 'A');
+    //especialidade
+    await (await page).select('select#especialidade', '95');
 
 
   } catch (e) {
