@@ -4,7 +4,6 @@ interface DoctorData {
   name: string;
   uf: string;
   crm: number;
-  county: string;
   // adicionar o resto
 }
 
@@ -28,9 +27,17 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
 
     // select inputs
     // UF
-    await (await page).select("select#uf", "df"); // nao funciona
-    // county
-    await (await page).select("select#municipio", "8770"); // nn funciona pq o de cima ainda nn funciona
+    await (await page).waitForNetworkIdle();
+
+    if (await (await page).waitForSelector("#uf")) {
+      console.log("uf found");
+    }
+    await (await page).select("select#uf", doctorData.uf);
+
+    //por segurança, tenta marcar a uf de novo
+    await (await page).waitForNetworkIdle();
+    await (await page).select("select#uf", doctorData.uf);
+
     // subscription
     (await page).select("select#inscricao", "P");
     // situation type
@@ -38,24 +45,44 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
     // situation
     (await page).select("select#situacao", "A");
     // specialty
-    await (await page).select("[id='especialidade']", "95"); // nao funciona
+    // await (await page).select("[id='especialidade']", "95");
 
     // btn submit
-    const btnSubmit = await (await page).waitForSelector('button.btn-buscar');
-       await btnSubmit?.click()
-    
-    
-    // get Results
-    const resultadoItems = await (await page).waitForSelector('div.resultado-item');
-    console.log(resultadoItems)
- 
-    
-    // exemple to get the textcontent 
-    // const textSelector = await page.waitForSelector(
-    //     'text/Customize and automate'
-    //   );
-    //   const fullTitle = await textSelector?.evaluate(el => el.textContent);
-  
+    const btnSubmit = await (await page).waitForSelector("button.btn-buscar");
+    await btnSubmit?.click();
+
+
+
+    // get doctorInfo
+    const doctorElement = await (
+      await page
+    ).waitForSelector(".resultado-item", { timeout: 5000 });
+
+    console.log(doctorElement)
+
+    const doctorInfo = await (
+      await page
+    ).evaluate((element) => {
+      const name = element.querySelector("h4")?.textContent;
+      const situationElement = Array.from(
+        element.querySelectorAll(".col-md")
+      ).find((el: any) => el.textContent?.includes("Regular"))
+        ? "Regular"
+        : "Not Regular";
+
+      return { name, situation: situationElement };
+    }, doctorElement);
+
+    // validate doctorInfo
+      if (
+      doctorInfo.situation === "Regular" &&
+      doctorInfo.name === doctorData.name
+    ) {
+      return true
+    } else {
+      console.log(doctorInfo.name, doctorInfo.situation);
+      return false
+    }
 
   } catch (e) {
     console.log(e);
@@ -78,18 +105,20 @@ async function main(doctarData: DoctorData) {
 
     (await page).goto(URL);
 
-    await fillData(page, doctarData);
+    const isValidated = await fillData(page, doctarData);
+
+    console.log(isValidated)
   } catch (e) {
     console.log(e);
   }
 }
 
 const robot = async () => {
+
   const doctarData: DoctorData = {
-    name: "Danillo Ferreira Araujo",
-    crm: 1234567,
+    name: "Veida Borges Soares de Queiroz",
+    crm: 7286,
     uf: "SE",
-    county: "Aracaju",
   };
 
   await main(doctarData);
