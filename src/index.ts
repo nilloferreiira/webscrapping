@@ -58,7 +58,7 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
       await page
     ).waitForSelector(".resultado-item", { timeout: 5000 });
 
-    console.log(doctorElement)
+    // console.log(doctorElement)
 
     const doctorInfo = await (
       await page
@@ -78,7 +78,12 @@ async function fillData(page: Promise<Page>, doctorData: DoctorData) {
       doctorInfo.situation === "Regular" &&
       doctorInfo.name === doctorData.name
     ) {
-      return true
+      return {
+                name: doctorInfo.name,  
+                crm: doctorData.crm,
+                uf: doctorData.uf,
+                situation: doctorInfo.situation
+              }
     } else {
       console.log(doctorInfo.name, doctorInfo.situation);
       return false
@@ -107,7 +112,15 @@ async function main(doctarData: DoctorData) {
 
     const isValidated = await fillData(page, doctarData);
 
-    console.log(isValidated)
+    if(isValidated !== false) {
+      if(isValidated === undefined) {
+        return new Error(`Falha ao obter os dados do site do CFM. Por favor tente novamente em alguns instantes!`)
+      } 
+      return isValidated
+    } else {
+      return false
+    }
+
   } catch (e) {
     console.log(e);
   }
